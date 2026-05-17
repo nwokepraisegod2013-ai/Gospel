@@ -25,7 +25,7 @@ class GospelApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF67D7F7),
             brightness: Brightness.dark,
-            background: const Color(0xFF0B1724),
+            surface: const Color(0xFF0B1724),
             primary: const Color(0xFF67D7F7),
           ),
           textTheme: ThemeData.dark().textTheme.apply(

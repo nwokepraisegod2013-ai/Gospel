@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gospel_stream/models/content_item.dart';
+import 'package:gospel_stream/screens/music_detail_screen.dart';
 import 'package:gospel_stream/screens/video_detail_screen.dart';
 import 'package:gospel_stream/services/app_state.dart';
 import 'package:gospel_stream/widgets/glass_card.dart';
@@ -116,16 +117,16 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildSearch(BuildContext context) {
-    return GlassCard(
-      padding: const EdgeInsets.all(16),
+    return const GlassCard(
+      padding: EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(Icons.search, color: Colors.white70),
-          const SizedBox(width: 12),
+          Icon(Icons.search, color: Colors.white70),
+          SizedBox(width: 12),
           Expanded(
             child: TextField(
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
                 hintText: 'Search artists, songs, sermons...',
                 hintStyle: TextStyle(color: Colors.white54),
                 border: InputBorder.none,
@@ -149,9 +150,11 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         state.selectVideo(item.id);
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const VideoDetailScreen()));
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => item.type == ContentType.music
+              ? const MusicDetailScreen()
+              : const VideoDetailScreen(),
+        ));
       },
       child: GlassCard(
         padding: EdgeInsets.zero,
@@ -257,9 +260,11 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.play_circle_fill, color: Colors.white),
             onPressed: () {
               state.selectVideo(item.id);
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const VideoDetailScreen()),
-              );
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => item.type == ContentType.music
+                    ? const MusicDetailScreen()
+                    : const VideoDetailScreen(),
+              ));
             },
           ),
         ),

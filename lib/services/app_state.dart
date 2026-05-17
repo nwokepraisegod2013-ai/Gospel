@@ -28,6 +28,9 @@ class AppState extends ChangeNotifier {
       title: 'Hope & Harmony',
       subtitle: 'Contemporary gospel worship mix',
       type: ContentType.music,
+      contentUrl:
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      description: 'A soulful gospel track for worship and reflection.',
       thumbnailUrl:
           'https://images.unsplash.com/photo-1511376777868-611b54f68947?auto=format&fit=crop&w=900&q=80',
       author: 'Blessed Voices',
@@ -86,9 +89,28 @@ class AppState extends ChangeNotifier {
     'live_1': 460,
   };
 
+  final Set<String> favorites = <String>{};
+  final List<String> playlists = <String>[];
+
   void updateTab(int index) {
     selectedIndex = index;
     notifyListeners();
+  }
+
+  void toggleFavorite(String id) {
+    if (favorites.contains(id)) {
+      favorites.remove(id);
+    } else {
+      favorites.add(id);
+    }
+    notifyListeners();
+  }
+
+  void addToPlaylist(String id) {
+    if (!playlists.contains(id)) {
+      playlists.add(id);
+      notifyListeners();
+    }
   }
 
   void selectVideo(String id) {

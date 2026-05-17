@@ -39,6 +39,8 @@ class CreatorScreen extends StatelessWidget {
                   Icons.music_note,
                 ),
                 const SizedBox(height: 16),
+                _musicCreatorCard(context),
+                const SizedBox(height: 16),
                 _uploadCard(
                   context,
                   'Upload book',
@@ -65,7 +67,7 @@ class CreatorScreen extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(18),
         leading: CircleAvatar(
-          backgroundColor: Colors.blueAccent.withOpacity(0.2),
+          backgroundColor: const Color.fromRGBO(33, 150, 243, 0.2),
           child: Icon(icon, color: Colors.white),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -74,7 +76,7 @@ class CreatorScreen extends StatelessWidget {
           onPressed: () {
             showModalBottomSheet(
               context: context,
-              backgroundColor: Colors.white10,
+              backgroundColor: const Color.fromRGBO(255, 255, 255, 0.1),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
@@ -113,31 +115,91 @@ class CreatorScreen extends StatelessWidget {
     );
   }
 
-  Widget _insightsCard() {
+  Widget _musicCreatorCard(BuildContext context) {
     return GlassCard(
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: Colors.blueAccent,
+                  child: Icon(Icons.music_note, color: Colors.white),
+                ),
+                SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    'Artist release toolkit',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             const Text(
+              'Upload new tracks, publish albums, manage your studio profile, and track how listeners engage with your music.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.upload_file),
+                  label: const Text('Release single'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.analytics),
+                  label: const Text('View metrics'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    backgroundColor: Colors.white12,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _insightsCard() {
+    return const GlassCard(
+      child: Padding(
+        padding: EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               'Creator insights',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [Text('Views'), Text('12.4K')],
+              children: [Text('Views'), Text('12.4K')],
             ),
-            const Divider(color: Colors.white12, height: 28),
+            Divider(color: Colors.white12, height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [Text('New followers'), Text('1.1K')],
+              children: [Text('New followers'), Text('1.1K')],
             ),
-            const Divider(color: Colors.white12, height: 28),
+            Divider(color: Colors.white12, height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [Text('Live sessions'), Text('8')],
+              children: [Text('Live sessions'), Text('8')],
             ),
           ],
         ),
