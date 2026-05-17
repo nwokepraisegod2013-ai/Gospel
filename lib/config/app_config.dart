@@ -4,6 +4,11 @@ class AppConfig {
   AppConfig._();
 
   static String get apiBaseUrl {
+    const envUrl = String.fromEnvironment('API_BASE_URL', defaultValue: '');
+    if (envUrl.isNotEmpty) {
+      return envUrl;
+    }
+
     if (kIsWeb) {
       return 'http://localhost:3000/api';
     }

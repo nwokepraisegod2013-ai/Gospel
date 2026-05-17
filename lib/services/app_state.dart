@@ -8,6 +8,11 @@ class AppState extends ChangeNotifier {
   String selectedVideoId = 'video_1';
   bool isLoading = false;
   String? errorMessage;
+  String? authToken;
+  Map<String, dynamic>? currentUser;
+
+  bool get isAuthenticated => authToken != null;
+  String get currentUserDisplayName => currentUser?['name'] ?? 'Creator';
 
   final List<ContentItem> content = [
     ContentItem(
@@ -113,6 +118,103 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  Future<bool> login(String email, String password) async {
+    try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
+
+      final response = await BackendService.login(email, password);
+      authToken = response['token'] as String?;
+      currentUser = response['user'] as Map<String, dynamic>?;
+      return true;
+    } catch (e) {
+      errorMessage = 'Login failed: $e';
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> register(String name, String email, String password) async {
+    try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
+
+      final response = await BackendService.register(name, email, password);
+      authToken = response['token'] as String?;
+      currentUser = response['user'] as Map<String, dynamic>?;
+      return true;
+    } catch (e) {
+      errorMessage = 'Registration failed: $e';
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void logout() {
+    authToken = null;
+    currentUser = null;
+    notifyListeners();
+  }
+
+  Future<bool> createContent({
+    required String title,
+    required String type,
+    required String thumbnailUrl,
+    required String contentUrl,
+    required int duration,
+    String? subtitle,
+    String? description,
+    String? category,
+    String? artist,
+    String? album,
+    String? genre,
+    String? audioFormat,
+  }) async {
+    if (!isAuthenticated || authToken == null) {
+      errorMessage = 'Please log in before uploading content.';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
+
+      final item = await BackendService.createContent(
+        title: title,
+        type: type,
+        thumbnailUrl: thumbnailUrl,
+        contentUrl: contentUrl,
+        duration: duration,
+        subtitle: subtitle,
+        description: description,
+        category: category,
+        artist: artist,
+        album: album,
+        genre: genre,
+        audioFormat: audioFormat,
+        token: authToken,
+      );
+
+      content.insert(0, item);
+      selectedVideoId = item.id;
+      return true;
+    } catch (e) {
+      errorMessage = 'Failed to create content: $e';
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void selectVideo(String id) {
     selectedVideoId = id;
     notifyListeners();
@@ -176,7 +278,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await BackendService.likeContent(id);
+      await BackendService.likeContent(id, token: authToken);
     } catch (e) {
       // Revert on error
       likedByVideo[id] = (likedByVideo[id] ?? 1) - 1;
@@ -200,8 +302,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final sentMessage =
-          await BackendService.postMessage(selectedVideoId, text.trim());
+      final sentMessage = await BackendService.postMessage(
+        selectedVideoId,
+        text.trim(),
+        token: authToken,
+      );
       // Replace temp message with real one
       final index = chat.indexOf(tempMessage);
       if (index >= 0) {

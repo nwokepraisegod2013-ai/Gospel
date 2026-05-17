@@ -29,8 +29,14 @@ class _MusicDetailScreenState extends State<MusicDetailScreen> {
   }
 
   Future<void> _initializeAudio(ContentItem? content) async {
-    final url = content?.contentUrl ??
-        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+    final url = content?.contentUrl;
+    if (url == null || url.isEmpty) {
+      setState(() {
+        _loading = false;
+      });
+      return;
+    }
+
     try {
       await _player.setUrl(url);
     } catch (e) {

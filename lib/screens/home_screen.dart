@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gospel_stream/models/content_item.dart';
-import 'package:gospel_stream/screens/music_detail_screen.dart';
 import 'package:gospel_stream/screens/video_detail_screen.dart';
 import 'package:gospel_stream/services/app_state.dart';
 import 'package:gospel_stream/widgets/glass_card.dart';
@@ -61,53 +60,47 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Watch, listen, read and share inspirational content.',
+            'Your video hub for sermons, worship sessions and live gospel programming.',
             style: TextStyle(fontSize: 16, color: Colors.white70),
           ),
           const SizedBox(height: 24),
-          _buildSearch(context),
+          _buildSearch(),
           const SizedBox(height: 24),
           Expanded(
             child: ListView(
               physics: const BouncingScrollPhysics(),
               children: [
-                _sectionTitle('Trending videos'),
+                _sectionTitle('Featured videos'),
                 const SizedBox(height: 14),
                 SizedBox(
-                  height: 220,
+                  height: 240,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: state.videos.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 14),
+                    separatorBuilder: (_, __) => const SizedBox(width: 16),
                     itemBuilder: (context, index) {
                       final item = state.videos[index];
-                      return _mediaCard(context, item);
+                      return _videoCard(context, item);
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
-                _sectionTitle('Music for worship'),
-                const SizedBox(height: 14),
-                Column(
-                  children: state.music
-                      .map((item) => _listTile(context, item))
-                      .toList(),
-                ),
-                const SizedBox(height: 20),
-                _sectionTitle('Books & devotionals'),
-                const SizedBox(height: 14),
-                Column(
-                  children: state.books
-                      .map((item) => _listTile(context, item))
-                      .toList(),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 _sectionTitle('Live sessions'),
                 const SizedBox(height: 14),
-                ...state.content
-                    .where((item) => item.isLive)
-                    .map((item) => _liveCard(context, item)),
-                const SizedBox(height: 20),
+                Column(
+                  children: state.content
+                      .where((item) => item.isLive)
+                      .map((item) => _liveCard(context, item))
+                      .toList(),
+                ),
+                const SizedBox(height: 24),
+                _sectionTitle('All video content'),
+                const SizedBox(height: 14),
+                Column(
+                  children: state.videos
+                      .map((item) => _videoRow(context, item))
+                      .toList(),
+                ),
               ],
             ),
           ),
@@ -116,7 +109,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSearch(BuildContext context) {
+  Widget _buildSearch() {
     return const GlassCard(
       padding: EdgeInsets.all(16),
       child: Row(
@@ -127,7 +120,7 @@ class HomeScreen extends StatelessWidget {
             child: TextField(
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search artists, songs, sermons...',
+                hintText: 'Search worship videos...',
                 hintStyle: TextStyle(color: Colors.white54),
                 border: InputBorder.none,
               ),
@@ -145,15 +138,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _mediaCard(BuildContext context, ContentItem item) {
+  Widget _videoCard(BuildContext context, ContentItem item) {
     final state = context.read<AppState>();
     return GestureDetector(
       onTap: () {
         state.selectVideo(item.id);
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => item.type == ContentType.music
-              ? const MusicDetailScreen()
-              : const VideoDetailScreen(),
+          builder: (_) => const VideoDetailScreen(),
         ));
       },
       child: GlassCard(
@@ -180,39 +171,30 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      item.subtitle,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    Text(item.title,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Text(item.subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 13)),
+                    const SizedBox(height: 14),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            const Icon(
-                              Icons.favorite,
-                              size: 16,
-                              color: Colors.pinkAccent,
-                            ),
+                            const Icon(Icons.favorite,
+                                size: 16, color: Colors.pinkAccent),
                             const SizedBox(width: 6),
                             Text('${item.likes}'),
                           ],
                         ),
                         Text(
                           item.isLive
-                              ? 'Live'
+                              ? 'Live now'
                               : '${item.duration.inMinutes} min',
                           style: TextStyle(
                             color: item.isLive
@@ -232,38 +214,32 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _listTile(BuildContext context, ContentItem item) {
+  Widget _videoRow(BuildContext context, ContentItem item) {
     final state = context.read<AppState>();
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: GlassCard(
         child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: const EdgeInsets.all(14),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.network(
               item.thumbnailUrl,
-              width: 56,
-              height: 56,
+              width: 72,
+              height: 72,
               fit: BoxFit.cover,
             ),
           ),
-          title: Text(
-            item.title,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          subtitle: Text(
-            item.author,
-            style: const TextStyle(color: Colors.white70),
-          ),
+          title: Text(item.title,
+              style: const TextStyle(fontWeight: FontWeight.w700)),
+          subtitle:
+              Text(item.author, style: const TextStyle(color: Colors.white70)),
           trailing: IconButton(
-            icon: const Icon(Icons.play_circle_fill, color: Colors.white),
+            icon: const Icon(Icons.play_arrow, color: Colors.white),
             onPressed: () {
               state.selectVideo(item.id);
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => item.type == ContentType.music
-                    ? const MusicDetailScreen()
-                    : const VideoDetailScreen(),
+                builder: (_) => const VideoDetailScreen(),
               ));
             },
           ),
@@ -278,33 +254,45 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: GlassCard(
         child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          leading: const Icon(
-            Icons.wifi_tethering,
-            color: Colors.greenAccent,
-            size: 32,
+          contentPadding: const EdgeInsets.all(14),
+          leading: Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              image: DecorationImage(
+                image: NetworkImage(item.thumbnailUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: const Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Chip(
+                  label: Text('Live',
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                  backgroundColor: Colors.redAccent,
+                ),
+              ),
+            ),
           ),
-          title: Text(
-            item.title,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          subtitle: Text(
-            item.subtitle,
-            style: const TextStyle(color: Colors.white70),
-          ),
+          title: Text(item.title,
+              style: const TextStyle(fontWeight: FontWeight.w700)),
+          subtitle: Text(item.subtitle,
+              style: const TextStyle(color: Colors.white70)),
           trailing: ElevatedButton(
             onPressed: () {
               state.selectVideo(item.id);
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const VideoDetailScreen()),
-              );
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const VideoDetailScreen(),
+              ));
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+                  borderRadius: BorderRadius.circular(16)),
             ),
-            child: const Text('Join'),
+            child: const Text('Watch'),
           ),
         ),
       ),

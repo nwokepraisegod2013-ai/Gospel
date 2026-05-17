@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:gospel_stream/screens/creator_screen.dart';
 import 'package:gospel_stream/screens/home_screen.dart';
+import 'package:gospel_stream/screens/music_screen.dart';
+import 'package:gospel_stream/screens/profile_screen.dart';
 import 'package:gospel_stream/services/app_state.dart';
 
 void main() {
@@ -67,8 +69,9 @@ class _MainShellState extends State<MainShell> {
 
   static const List<Widget> pages = [
     HomeScreen(),
+    MusicScreen(),
     CreatorScreen(),
-    Center(child: Text('Profile & Settings', style: TextStyle(fontSize: 18))),
+    ProfileScreen(),
   ];
 
   @override
@@ -82,6 +85,7 @@ class _MainShellState extends State<MainShell> {
         backgroundColor: Colors.white12,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.music_note), label: 'Music'),
           NavigationDestination(icon: Icon(Icons.create), label: 'Creator'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
         ],
